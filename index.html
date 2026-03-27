@@ -1,5 +1,4 @@
 <!doctype html>
-
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -9,67 +8,101 @@
   <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 
   <style>
-    body {
-      margin: 0;
-      background: #0f0f0f;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    html, body {
+      margin:0;
+      padding:0;
+      height:100%;
+      overscroll-behavior: none;
     }
 
-    #wrap {
+    body{
+      /* ✅ Fondo degradado elegante */
+      background: radial-gradient(circle at 50% 35%, #1a1a1a 0%, #0b0b0b 55%, #070707 100%);
+
+      /* ✅ Alto real en móvil (evita salto) */
+      height:100dvh;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      overflow:hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: rgba(255,255,255,.9);
+    }
+
+    /* ✅ Contenedor centrado siempre */
+    #wrap{
       width: min(1200px, 96vw);
-      height: min(92vh, 860px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      height:100dvh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       position: relative;
+      padding: 10px 0;
+      box-sizing: border-box;
     }
 
-    #book {
-      width: 92vw;
-      height: 92vh;
-      max-width: 1200px;
-      max-height: 860px;
-      filter: drop-shadow(0 18px 40px rgba(0, 0, 0, 0.55));
+    /* ✅ Libro con más profundidad */
+    #book{
+      width: min(92vw, 1200px);
+      height: min(92dvh, 860px);
+      filter:
+        drop-shadow(0 26px 70px rgba(0,0,0,.70))
+        drop-shadow(0 10px 18px rgba(0,0,0,.45));
     }
 
-    .page {
-      background: #111;
+    /* ✅ Página con margen tipo revista */
+    .page{
+      background:#f6f2e9; /* papel */
       border-radius: 12px;
       overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      /* sutil textura/luz interior */
+      box-shadow:
+        inset 0 0 0 1px rgba(0,0,0,.10),
+        inset 0 0 45px rgba(0,0,0,.06);
     }
 
-    .page img {
-      width: 100%;
-      height: 100%;
+    /* ✅ Imagen con margen blanco real (como revista impresa) */
+    .page img{
+      width: 92%;
+      height: 92%;
       object-fit: contain;
-      display: block;
+      display:block;
+      user-select:none;
+      -webkit-user-drag:none;
+      pointer-events:none;
+    }
+
+    /* ✅ Indicador de página */
+    #pageIndicator{
+      position:absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      letter-spacing: .2px;
+      background: rgba(0,0,0,.55);
+      border: 1px solid rgba(255,255,255,.10);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       user-select: none;
-      -webkit-user-drag: none;
       pointer-events: none;
     }
 
-    .tap-zone {
-      position: absolute;
-      top: 0;
-      height: 100%;
-      width: 18%;
-      z-index: 10;
-      cursor: pointer;
+    /* Fallback para navegadores que no soportan dvh */
+    @supports not (height: 100dvh) {
+      body { height:100vh; }
+      #wrap { height:100vh; }
+      #book { height:min(92vh, 860px); }
     }
-
-    #tapPrev { left: 0; }
-    #tapNext { right: 0; }
   </style>
-
 </head>
 
 <body>
@@ -86,92 +119,65 @@
       <div class="page"><img src="img/09.jpg" alt="Página 9"></div>
     </div>
 
-```
-<div id="tapPrev" class="tap-zone" aria-label="Izquierda"></div>
-<div id="tapNext" class="tap-zone" aria-label="Derecha"></div>
-```
-
+    <div id="pageIndicator">Página 1 / 12</div>
   </div>
 
   <script>
     window.addEventListener("load", () => {
       const bookEl = document.getElementById("book");
+      const indicatorEl = document.getElementById("pageIndicator");
+      const totalPages = document.querySelectorAll(".page").length;
 
       const pageFlip = new St.PageFlip(bookEl, {
+        // base vertical 9:16
         width: 540,
         height: 960,
         size: "stretch",
+
         minWidth: 320,
         maxWidth: 1400,
         minHeight: 568,
         maxHeight: 2000,
+
         showCover: true,
-        maxShadowOpacity: 0.7,
+
+        // ✅ sombras + hoja
+        maxShadowOpacity: 0.65,
         showPageCorners: true,
         flippingTime: 900,
+
         useMouseEvents: true,
         mobileScrollSupport: false,
         swipeDistance: 30,
-        clickEventForward: false
+
+        clickEventForward: true
       });
 
       pageFlip.loadFromHTML(document.querySelectorAll(".page"));
 
-      let busy = false;
-
-      function flipNext() {
-        if (busy) return;
-        busy = true;
-        pageFlip.flipNext();
-        setTimeout(() => {
-          busy = false;
-        }, 250);
+      // ✅ Actualiza indicador de página (siempre)
+      function updateIndicator() {
+        // getCurrentPageIndex suele devolver 0-based
+        const idx = (pageFlip.getCurrentPageIndex ? pageFlip.getCurrentPageIndex() : 0);
+        const current = Math.min(totalPages, Math.max(1, idx + 1));
+        indicatorEl.textContent = `Página ${current} / ${totalPages}`;
       }
 
-      function flipPrevBetter() {
-        if (busy) return;
-        if (pageFlip.getCurrentPageIndex && pageFlip.getCurrentPageIndex() === 0) return;
-
-        busy = true;
-
-        try {
-          pageFlip.flipNext();
-        } catch (e) {}
-
-        setTimeout(() => {
-          try {
-            pageFlip.flipPrev();
-          } catch (e) {}
-          setTimeout(() => {
-            busy = false;
-          }, 350);
-        }, 60);
+      // intenta enganchar eventos si existen
+      if (pageFlip.on) {
+        pageFlip.on("flip", updateIndicator);
+        pageFlip.on("changeState", updateIndicator);
       }
 
-      document.getElementById("tapNext").addEventListener("click", flipPrevBetter);
-      document.getElementById("tapPrev").addEventListener("click", flipNext);
-
+      // fallback: refresca cada flip por teclado también
       window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowRight") flipPrevBetter();
-        if (e.key === "ArrowLeft") flipNext();
+        if (e.key === "ArrowRight") { pageFlip.flipNext(); setTimeout(updateIndicator, 20); }
+        if (e.key === "ArrowLeft")  { pageFlip.flipPrev(); setTimeout(updateIndicator, 20); }
       });
 
-      bookEl.addEventListener("touchend", (e) => {
-        const t = e.changedTouches && e.changedTouches[0];
-        if (!t) return;
-
-        const rect = bookEl.getBoundingClientRect();
-        const x = t.clientX - rect.left;
-        const ratio = x / rect.width;
-
-        if (ratio > 0.66) {
-          flipPrevBetter();
-        } else if (ratio < 0.34) {
-          flipNext();
-        }
-      }, { passive: true });
+      // inicial
+      updateIndicator();
     });
   </script>
-
 </body>
 </html>
