@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -64,29 +65,32 @@
       z-index:10;
       cursor:pointer;
     }
+
     #tapPrev{ left:0; }
     #tapNext{ right:0; }
   </style>
+
 </head>
 
 <body>
   <div id="wrap">
     <div id="book">
-      <div class="page"><img src="img/01-01.jpg" alt="Página 1"></div>
-      <div class="page"><img src="img/01-02.jpg" alt="Página 2"></div>
-      <div class="page"><img src="img01-/03.jpg" alt="Página 3"></div>
-      <div class="page"><img src="img/01-04.jpg" alt="Página 4"></div>
-      <div class="page"><img src="img/01-05.jpg" alt="Página 5"></div>
-      <div class="page"><img src="img/01-06.jpg" alt="Página 6"></div>
-      <div class="page"><img src="img/01-07.jpg" alt="Página 7"></div>
-      <div class="page"><img src="img/01-08.jpg" alt="Página 8"></div>
-      <div class="page"><img src="img/01-09.jpg" alt="Página 9"></div>
-
+      <div class="page"><img src="01-01.jpg" alt="Página 1"></div>
+      <div class="page"><img src="01-02.jpg" alt="Página 2"></div>
+      <div class="page"><img src="01-03.jpg" alt="Página 3"></div>
+      <div class="page"><img src="01-04.jpg" alt="Página 4"></div>
+      <div class="page"><img src="01-05.jpg" alt="Página 5"></div>
+      <div class="page"><img src="01-06.jpg" alt="Página 6"></div>
+      <div class="page"><img src="01-07.jpg" alt="Página 7"></div>
+      <div class="page"><img src="01-08.jpg" alt="Página 8"></div>
+      <div class="page"><img src="01-09.jpg" alt="Página 9"></div>
     </div>
 
-    <!-- Controles -->
-    <div id="tapPrev" class="tap-zone" aria-label="Izquierda"></div>
-    <div id="tapNext" class="tap-zone" aria-label="Derecha"></div>
+```
+<div id="tapPrev" class="tap-zone" aria-label="Izquierda"></div>
+<div id="tapNext" class="tap-zone" aria-label="Derecha"></div>
+```
+
   </div>
 
   <script>
@@ -102,11 +106,9 @@
         minHeight: 568,
         maxHeight: 2000,
         showCover: true,
-
         maxShadowOpacity: 0.7,
         showPageCorners: true,
         flippingTime: 900,
-
         useMouseEvents: true,
         mobileScrollSupport: false,
         swipeDistance: 30,
@@ -115,10 +117,6 @@
 
       pageFlip.loadFromHTML(document.querySelectorAll(".page"));
 
-      // ========= AJUSTE CLAVE =========
-      // Hack para que "volver" se vea menos como tarjeta:
-      // hace micro-adelanto y luego vuelve, forzando el curl.
-      const USE_PREV_CURL_HACK = true;
       let busy = false;
 
       function flipNext(){
@@ -130,20 +128,10 @@
 
       function flipPrevBetter(){
         if (busy) return;
-        // Si estamos en la primera página, no hacemos nada
         if (pageFlip.getCurrentPageIndex && pageFlip.getCurrentPageIndex() === 0) return;
-
-        if (!USE_PREV_CURL_HACK){
-          busy = true;
-          pageFlip.flipPrev();
-          setTimeout(() => busy = false, 250);
-          return;
-        }
 
         busy = true;
 
-        // 1) Pequeño "empujón" hacia adelante (si se puede)
-        // 2) Luego volver, para forzar el render del curl
         try { pageFlip.flipNext(); } catch(e) {}
 
         setTimeout(() => {
@@ -152,19 +140,14 @@
         }, 60);
       }
 
-      // Controles invertidos (como lo pediste)
-      // Derecha = volver (con mejor animación)
-      // Izquierda = avanzar
       document.getElementById("tapNext").addEventListener("click", flipPrevBetter);
       document.getElementById("tapPrev").addEventListener("click", flipNext);
 
-      // Teclado invertido: → vuelve, ← avanza
       window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowRight") flipPrevBetter();
         if (e.key === "ArrowLeft") flipNext();
       });
 
-      // Móvil invertido: derecha vuelve, izquierda avanza
       bookEl.addEventListener("touchend", (e) => {
         const t = e.changedTouches && e.changedTouches[0];
         if (!t) return;
@@ -178,5 +161,6 @@
       }, { passive: true });
     });
   </script>
+
 </body>
 </html>
