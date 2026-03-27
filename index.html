@@ -3,23 +3,18 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Revista Digital</title>
-
   <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     html, body {
       margin: 0;
       width: 100%;
       height: 100%;
       background: #111;
       overflow: hidden;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      font-family: Arial, sans-serif;
     }
 
     body {
@@ -28,29 +23,19 @@
       justify-content: center;
     }
 
-    #wrap {
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px;
-    }
-
     #book {
-      width: min(96vw, 1100px);
-      height: min(96vw, 1100px);
-      max-height: 92vh;
-      filter: drop-shadow(0 18px 40px rgba(0,0,0,.45));
+      width: min(90vw, 1100px);
+      height: min(90vw, 1100px);
+      max-height: 90vh;
     }
 
     .page {
       background: #111;
-      border-radius: 12px;
-      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow: hidden;
+      border-radius: 12px;
     }
 
     .page img {
@@ -58,57 +43,38 @@
       height: 100%;
       object-fit: contain;
       display: block;
-      background: #111;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none;
     }
   </style>
 
 </head>
-
 <body>
-  <div id="wrap">
-    <div id="book">
-      <div class="page"><img src="img/01.jpg" alt="Página 1"></div>
-      <div class="page"><img src="img/02.jpg" alt="Página 2"></div>
-      <div class="page"><img src="img/03.jpg" alt="Página 3"></div>
-      <div class="page"><img src="img/04.jpg" alt="Página 4"></div>
-      <div class="page"><img src="img/05.jpg" alt="Página 5"></div>
-      <div class="page"><img src="img/06.jpg" alt="Página 6"></div>
-      <div class="page"><img src="img/07.jpg" alt="Página 7"></div>
-      <div class="page"><img src="img/08.jpg" alt="Página 8"></div>
-      <div class="page"><img src="img/09.jpg" alt="Página 9"></div>
-    </div>
+  <div id="book">
+    <div class="page"><img src="img/01.jpg" alt="1"></div>
+    <div class="page"><img src="img/02.jpg" alt="2"></div>
+    <div class="page"><img src="img/03.jpg" alt="3"></div>
+    <div class="page"><img src="img/04.jpg" alt="4"></div>
+    <div class="page"><img src="img/05.jpg" alt="5"></div>
+    <div class="page"><img src="img/06.jpg" alt="6"></div>
+    <div class="page"><img src="img/07.jpg" alt="7"></div>
+    <div class="page"><img src="img/08.jpg" alt="8"></div>
+    <div class="page"><img src="img/09.jpg" alt="9"></div>
   </div>
 
   <script>
-    window.addEventListener("load", () => {
-      const bookEl = document.getElementById("book");
-
-      const pageFlip = new St.PageFlip(bookEl, {
+    window.onload = function () {
+      const pageFlip = new St.PageFlip(document.getElementById("book"), {
         width: 1080,
         height: 1080,
         size: "stretch",
-        minWidth: 260,
+        minWidth: 250,
+        minHeight: 250,
         maxWidth: 1200,
-        minHeight: 260,
         maxHeight: 1200,
-        showCover: true,
-        useMouseEvents: true,
-        mobileScrollSupport: false,
-        flippingTime: 700,
-        maxShadowOpacity: 0.4,
-        showPageCorners: true,
-        swipeDistance: 20
+        showCover: true
       });
 
       pageFlip.loadFromHTML(document.querySelectorAll(".page"));
-
-      window.addEventListener("resize", () => {
-        pageFlip.update();
-      });
-    });
+    };
   </script>
 
 </body>
