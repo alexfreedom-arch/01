@@ -4,34 +4,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Prueba imágenes</title>
+  <title>Revista Digital</title>
+
+  <!-- PageFlip CDN -->
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+
   <style>
-    body{
-      margin:0;
-      background:#111;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:20px;
-      padding:20px;
+    body {
+      margin: 0;
+      background: #111;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    img{
-      width:100%;
-      height:auto;
-      display:block;
-      background:#222;
-      border-radius:12px;
+
+    #book {
+      width: 600px;
+      height: 600px;
+    }
+
+    .page {
+      background: #000;
+    }
+
+    .page img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
     }
   </style>
+
 </head>
+
 <body>
-  <img src="img/01.jpg" alt="">
-  <img src="img/02.jpg" alt="">
-  <img src="img/03.jpg" alt="">
-  <img src="img/04.jpg" alt="">
-  <img src="img/05.jpg" alt="">
-  <img src="img/06.jpg" alt="">
-  <img src="img/07.jpg" alt="">
-  <img src="img/08.jpg" alt="">
-  <img src="img/09.jpg" alt="">
+
+  <div id="book">
+    <div class="page"><img src="img/01.jpg"></div>
+    <div class="page"><img src="img/02.jpg"></div>
+    <div class="page"><img src="img/03.jpg"></div>
+    <div class="page"><img src="img/04.jpg"></div>
+    <div class="page"><img src="img/05.jpg"></div>
+    <div class="page"><img src="img/06.jpg"></div>
+    <div class="page"><img src="img/07.jpg"></div>
+    <div class="page"><img src="img/08.jpg"></div>
+    <div class="page"><img src="img/09.jpg"></div>
+  </div>
+
+  <script>
+    window.onload = function () {
+      const pageFlip = new St.PageFlip(
+        document.getElementById("book"),
+        {
+          width: 600,
+          height: 600,
+          size: "fixed",
+          showCover: true
+        }
+      );
+
+      pageFlip.loadFromHTML(document.querySelectorAll(".page"));
+    };
+  </script>
+
 </body>
 </html>
